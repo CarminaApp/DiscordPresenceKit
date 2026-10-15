@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+      - name: swift-format
+        run: swift format lint --strict --recursive --parallel --configuration .swift-format Sources Tests Package.swift
+
+  test:
+    name: Tests
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+      - name: swift test
+        run: swift test
